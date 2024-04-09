@@ -102,6 +102,7 @@ known_architectures = sorted(set([e0 + e1 + e2 + e3 + e4 + e5 + e6 + e7 + e8
                                     for e1 in std_ext("c")
                                     for e2 in std_ext("n")
                                     for e3 in x_ext("cheri")]
+                                 + ["rv32ecXcheriot"]
                                  ))
 #print(known_architectures)
 known_generators = {'internal', 'sail', 'manual'}
@@ -181,7 +182,7 @@ parser.add_argument('-r', '--architecture', type=str.lower, metavar='ARCH', choi
   default='rv32i',
   help="""The architecture to verify, where ARCH is a non case sensitive string
   of the form 'rv{32,64}g[c][n]', or 'rv{32,64}i[m][a][f][d][n]' optionally followed
-  by an '_'-separated list of one or more of {Zicsr, Zifencei, Xcheri}
+  by an '_'-separated list of one or more of {Zicsr, Zifencei, Xcheri, xcheriot}
   appearing in that order (e.g. rv64ifcXcheri, rv64imd,
   rv32imafZicsr_Zifencei_Xcheri ...)""")
 parser.add_argument('--verification-archstring', type=str.lower, metavar='ARCH',
@@ -256,6 +257,10 @@ class ISA_Configuration:
     return self.has("cheri")
 
   @property
+  def has_cheriot(self):
+    return self.has("cheriot")
+
+  @property
   def has_icsr(self):
     return self.has("icsr")
 
@@ -276,7 +281,7 @@ class ISA_Configuration:
     self.std_extensions = parts[0][4:]
     self.ext_map = {}
     for letter in self.std_extensions:
-      if letter in ('i', 'm', 's', 'a', 'f', 'd', 'c', 'n'):
+      if letter in ('i', 'm', 's', 'a', 'f', 'd', 'c', 'n', 'e'):
         self.ext_map[letter] = True
       elif letter == 'g':
         # G enables imafd+icsr+ihpm+ifencei
@@ -288,7 +293,7 @@ class ISA_Configuration:
         exit(-1)
     self.extensions = parts[1:]
     for extension in self.extensions:
-      if extension in ('icsr', 'ifencei', 'ihpm', 'cheri'):
+      if extension in ('icsr', 'ifencei', 'ihpm', 'cheri', 'cheriot'):
         self.ext_map[extension] = True
       else:
         print("ERROR: Extension "+extension+" not currently supported")
@@ -302,6 +307,8 @@ class ISA_Configuration:
       result += "rv64"
     if self.has("i"):
       result += "I"
+    elif self.has("e"):
+      result += "E"
     if self.has("c"):
       result += "C"
     if self.has("m"):
@@ -321,6 +328,8 @@ class ISA_Configuration:
       result += "Zifencei"
     if self.has_cheri:
       result += "Xcheri"
+    elif self.has_cheriot:
+      result += "Xcheriot"
     result += "-rvfi-dii"
     return result
 
@@ -390,7 +399,7 @@ class ISA_Configuration:
     #  print("ERROR: Sail currently does not support CSRs.")
     #  exit(-1)
     #TODO check if there are other configurations that Sail does not yet support and throw an error.
-    if self.has_cheri:
+    if self.has_cheri or self.has_cheriot:
       result = "cheri_" + result
     if self.has_xlen_32:
       result += "_RV32"
@@ -483,10 +492,14 @@ def spawn_rvfi_dii_server(name, port, log, isa_def):
   ##############################################################################
   elif name == 'sail':
     if args.path_to_sail_riscv_dir is None:
-      args.path_to_sail_riscv_dir = op.join(implementations_path, "sail-")
-      if isa_def.has_cheri:
-        args.path_to_sail_riscv_dir += "cheri-"
-      args.path_to_sail_riscv_dir += "riscv/c_emulator/"
+      args.path_to_sail_riscv_dir = implementations_path
+      if isa_def.has_cheriot:
+        args.path_to_sail_riscv_dir = op.join(args.path_to_sail_riscv_dir, "cheriot-sail")
+      elif isa_def.has_cheri:
+        args.path_to_sail_riscv_dir = op.join(args.path_to_sail_riscv_dir, "sail-cheri-riscv")
+      else:
+        args.path_to_sail_riscv_dir = op.join(args.path_to_sail_riscv_dir, "sail-riscv")
+      args.path_to_sail_riscv_dir = op.join(args.path_to_sail_riscv_dir, "c_emulator")
     full_sail_sim = op.join(op.dirname(op.realpath(__file__)), args.path_to_sail_riscv_dir, isa_def.get_sail_name())
     cmd = [full_sail_sim]
     if not isa_def.has("c"):
