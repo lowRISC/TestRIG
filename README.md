@@ -51,6 +51,7 @@ Currently, the provided modules are:
 - [CHERI Spike](https://github.com/CTSRD-CHERI/riscv-isa-sim.git)
 - [Sail RISC-V model](https://github.com/rems-project/sail-riscv.git)
 - [CHERI Sail RISC-V model](https://github.com/CTSRD-CHERI/sail-cheri-riscv.git)
+- [CHERIot Sail RISC-V model](https://github.com/microsoft/cheriot-sail.git)
 - [Piccolo](https://github.com/CTSRD-CHERI/Piccolo.git)
 - [Flute](https://github.com/CTSRD-CHERI/Flute.git)
 - [Toooba](https://github.com/CTSRD-CHERI/Toooba.git)
