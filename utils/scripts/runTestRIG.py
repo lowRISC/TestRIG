@@ -97,12 +97,13 @@ known_architectures = sorted(set([e0 + e1 + e2 + e3 + e4 + e5 + e6 + e7 + e8
                                   for e6 in std_ext("c")
                                   for e7 in std_ext("n")
                                   for e8 in multi_letter_exts]
-                                 + [e0 + e1 + e2 + e3
+                                 + [e0 + e1 + e2 + e3 + e4
                                     for e0 in ["rv32g", "rv64g"]
                                     for e1 in std_ext("c")
                                     for e2 in std_ext("n")
-                                    for e3 in x_ext("cheri")]
-                                 + ["rv32ecXcheriot"]
+                                    for e3 in z_ext("ifencei")
+                                    for e4 in x_ext("cheri")]
+                                 + ["rv32ecZifencei_Xcheriot"]
                                  ))
 #print(known_architectures)
 known_generators = {'internal', 'sail', 'manual'}
@@ -511,6 +512,8 @@ def spawn_rvfi_dii_server(name, port, log, isa_def):
     #cmd += ["--rvfi-dii", str(port)]
     cmd += ["-r", str(port)]
     cmd += ["-i"]
+    if args.verbosity >= 3:
+      cmd += ["-v"]
   ##############################################################################
   elif name == 'ibex':
     cmd = [args.path_to_ibex, 'localhost', str(port)]
