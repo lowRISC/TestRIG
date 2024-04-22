@@ -168,7 +168,7 @@ parser.add_argument('--path-to-toooba', metavar='PATH', type=str,
   default=op.join(implementations_path, "Toooba/builds/RV64ACDFIMSUxCHERI_Toooba_RVFI_DII_bluesim/exe_HW_sim"),
   help="The PATH to the Toooba executable")
 parser.add_argument('--path-to-ibex', metavar='PATH', type=str,
-  default=op.join(implementations_path, "ibex/verilator/obj_dir/Vibex_core_avalon"),
+  default=None,
   help="The PATH to the Ibex executable")
 parser.add_argument('--path-to-muntjac', metavar='PATH', type=str,
   default=op.join(implementations_path, "muntjac/bin/muntjac_core"),
@@ -516,6 +516,12 @@ def spawn_rvfi_dii_server(name, port, log, isa_def):
       cmd += ["-v"]
   ##############################################################################
   elif name == 'ibex':
+    if args.path_to_ibex is None:
+      if isa_def.has_cheriot:
+        build_path = op.join(testrig_root_path, "build")
+        args.path_to_ibex = op.join(build_path, "lowrisc_ibex_ibex_testrig_0/default-verilator/Vibex_top_sram")
+      else:
+        args.path_to_ibex = op.join(implementations_path, "ibex/verilator/obj_dir/Vibex_core_avalon")
     cmd = [args.path_to_ibex, 'localhost', str(port)]
   ##############################################################################
   elif name == 'muntjac':
