@@ -522,7 +522,7 @@ def spawn_rvfi_dii_server(name, port, log, isa_def):
         args.path_to_ibex = op.join(build_path, "lowrisc_ibex_ibex_testrig_0/default-verilator/Vibex_top_sram")
       else:
         args.path_to_ibex = op.join(implementations_path, "ibex/verilator/obj_dir/Vibex_core_avalon")
-    cmd = [args.path_to_ibex, 'localhost', str(port)]
+    cmd = [args.path_to_ibex, 'localhost', str(port), "1"]
   ##############################################################################
   elif name == 'muntjac':
     env2["RVFI_DII_PORT"] = str(port)
