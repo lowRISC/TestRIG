@@ -46,7 +46,7 @@
 	url = https://github.com/CTSRD-CHERI/muntjac.git
 [submodule "riscv-implementations/cheriot-sail"]
 	path = riscv-implementations/cheriot-sail
-	url = git@github.com:microsoft/cheriot-sail.git
+	url = https://github.com/marnovandermaas/cheriot-sail.git
 [submodule "riscv-implementations/cheriot-ibex"]
 	path = riscv-implementations/cheriot-ibex
-	url = https://github.com/microsoft/cheriot-ibex.git
+	url = https://github.com/marnovandermaas/cheriot-ibex.git
