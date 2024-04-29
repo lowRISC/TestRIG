@@ -1,1 +1,3 @@
 *.S
+*.log
+build/
