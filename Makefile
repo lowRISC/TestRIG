@@ -200,7 +200,7 @@ muntjac-rv64imac:
 
 .PHONY: clean-riscv-implementations clean-rvbs clean-sail
 
-clean-riscv-implementations: clean-rvbs clean-spike clean-sail clean-piccolo clean-flute clean-toooba clean-muntjac clean-qemu clean-sail-rv32-cheri clean-sail-rv64-cheri
+clean-riscv-implementations: clean-rvbs clean-spike clean-sail clean-sail-rv32-cheri clean-sail-rv64-cheri clean-sail-rv32-cheriot clean-piccolo clean-flute clean-toooba clean-ibex clean-ibex-cheriot clean-muntjac clean-qemu
 
 clean-rvbs: clean-rvbs-rv32IZicsrZifencei
 
@@ -258,7 +258,9 @@ clean-toooba:
 
 clean-ibex:
 	$(MAKE) -C riscv-implementations/ibex/verilator clean
-	rm -rf build/lowrisc_ibex_cheriot_tetrig_0
+
+clean-ibex-cheriot:
+	rm -rf build/lowrisc_ibex_cheriot_testrig_0
 
 clean-muntjac:
 	$(MAKE) -C riscv-implementations/muntjac clean
