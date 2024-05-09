@@ -51,11 +51,12 @@ Currently, the provided modules are:
 - [CHERI Spike](https://github.com/CTSRD-CHERI/riscv-isa-sim.git)
 - [Sail RISC-V model](https://github.com/rems-project/sail-riscv.git)
 - [CHERI Sail RISC-V model](https://github.com/CTSRD-CHERI/sail-cheri-riscv.git)
-- [CHERIot Sail RISC-V model](https://github.com/microsoft/cheriot-sail.git)
+- [CHERIoT Sail RISC-V model](https://github.com/microsoft/cheriot-sail.git)
 - [Piccolo](https://github.com/CTSRD-CHERI/Piccolo.git)
 - [Flute](https://github.com/CTSRD-CHERI/Flute.git)
 - [Toooba](https://github.com/CTSRD-CHERI/Toooba.git)
 - [Ibex](https://github.com/CTSRD-CHERI/ibex.git)
+- [CHERIoT Ibex](https://github.com/microsoft/cheriot-ibex.git)
 - [QEMU](https://github.com/CTSRD-CHERI/qemu.git)
 
 ## Getting started
@@ -66,55 +67,150 @@ In order to get the different submodules provided by **TestRIG**, run the follow
 $ git submodule update --init --recursive
 ```
 
-The root makefile can currently build the QuickCheck Verification Engine, Spike, and the Sail implementation. Both Spike and Sail are built without CHERI support by default and Sail is built as a 32-bit version.
+The root makefile can currently build the QuickCheck Verification Engine, the CHERIoT Sail implementation, and the CHERIoT Ibex implementation.
 
 ### Dependencies
-The dependencies for the QuickCheck Verification Engine are `cabal` and `ghc`, both of which you can install using [GHCup](https://www.haskell.org/ghcup/).
-For `cabal` you must install version 3.4 or later to use the `list-bin` command.
 
-The dependencies for Spike are:
-- `sudo apt-get install device-tree-compiler`
+The dependencies for the Haskell-based QuickCheck Verification Engine can be installed by:
 
-The dependencies for RVBS are the Bluespec compiler `bsc`. You can follow the build instructions on the [B-Lang-org github](https://github.com/B-Lang-org/bsc).
+```sh
+$ curl --proto '=https' --tlsv1.2 -sSf https://get-ghcup.haskell.org | sh
+# -> press the Enter/Return key when prompted
+# -> reload your shell
 
-The dependencies for the Sail model can be installed using
-[opam](http://opam.ocaml.org/) by following the instructions from the
-[Sail wiki](https://github.com/rems-project/sail/blob/sail2/INSTALL.md). You may have to run `opam update` and `opam upgrade` occasionally if sail gets updated.
+$ ghcup tui
+# -> press "i", then Enter/Return, then "q"
+```
+
+The dependencies for a Sail model with built-in coverage collection can be built from source by:
+
+```sh
+# Ubuntu dependencies for sail and sailcov
+$ sudo apt-get install ocaml build-essential libgmp-dev z3 pkg-config zlib1g-dev cargo
+
+# Create and enter a directory for TestRIG-related builds of tools
+$ mkdir -p ~/tr_tools
+$ cd ~/tr_tools
+
+# Build Sail model compiler.
+# Instructions based on: https://github.com/rems-project/sail/blob/sail2/INSTALL.md#building-from-source-without-opam
+$ git clone https://github.com/rems-project/sail.git
+$ cd sail
+$ make
+
+# Build Sail model coverage library (libsail_coverage.a)
+# and coverage processing tool (sailcov).
+# Instrucctions based on: https://github.com/rems-project/sail/tree/sail2/sailcov
+$ make -C lib/coverage
+$ make -C sailcov
+
+$ cd ../../
+```
 
 The dependencies for Ibex are verilator:
-- `sudo apt-get install verilator`
 
-Toooba depends on the Bluespec compiler (see the dependencies for RVBS) and verilator. Toooba needs the version of verilator to be greater than: `Verilator 3.922 2018-03-17 rev verilator_3_920-32-gdf3d1a4`
-
-### Default Configuration
-
-You can verify a default configuration by executing:
 ```sh
-$ make
-$ utils/scripts/runTestRIG.py
+$ sudo apt-get install verilator
 ```
 
 ## Custom Configurations
+
 Look at the `Makefile` to see different targets to compare against each other. Also use the following command to figure out the different options for running TestRIG:
 
 ```sh
 $ utils/scripts/runTestRIG.py --help
 ```
 
-### 64-bit: Sail vs Toooba
-Executing the following commands will compare Sail and Toooba with the 64-bit version of the RISC-V instruction set, assuming that you've initialized the submodules and have installed all the dependencies described above.
+## CHERIoT: Sail vs. Ibex
+
+Executing the following commands will build and compare the CHERIoT Sail model with the CHERIoT version of Ibex across all compatible test templates (test generators), assuming that you've initialized the submodules and have installed all the dependencies described above.
+
 ```sh
+# Build and run CHERIoT Sail vs. CHERIoT Ibex
 $ make vengines
-$ make sail-rv64
-$ make toooba-rv64
-$ utils/scripts/runTestRIG.py -a sail -b toooba -r rv64i
+$ make sail-rv32-cheriot SAILCOV=1 SAIL_DIR='/home/${USER}/tr_tools/sail/'
+$ make ibex-cheriot
+$ utils/scripts/runTestRIG.py -a sail -b ibex -r rv32ecZifencei_Xcheriot
 ```
 
-### CHERI 32-bit: Sail vs Ibex
-Executing the following commands will compare Sail and Ibex with the 32-bit version of the RISC-V instruction set (including compressed) and CHERI extensions enabled, assuming that you've initialized the submodules and have installed all the dependencies described above.
+### Test Selection
+
+A subset of test gen can be specified using the `--test-include-regex <regex>` and `--test-exclude-regex <regex>` arguments. For example:
+
 ```sh
-$ make vengines
-$ make sail-rv32-cheri
-$ make ibex-rv32ic-cheri
-$ utils/scripts/runTestRIG.py -a sail -b ibex -r rv32icxcheri
+# Run the "arith" RV32 arithmetic instruction test template
+$ utils/scripts/runTestRIG.py -a sail -b ibex -r rv32ecZifencei_Xcheriot --test-include-regex '^arith$'
+# Run all but the "compressed" and "caprvcrandom" compressed instruction test templates
+$ utils/scripts/runTestRIG.py -a sail -b ibex -r rv32ecZifencei_Xcheriot --test-exclude-regex 'compress|rvc'
+```
+
+### Replay Failing Test
+
+You can replay a test previously saved as a trace file (ext. `.S`) using the `-t <file>` (`--trace-file <file>`) argument:
+
+```sh
+# Replay last failure
+$ utils/scripts/runTestRIG.py -a sail -b ibex -r rv32ecZifencei_Xcheriot -t last_failure.S
+```
+
+### Smoke Tests
+
+Some smoke tests (fixed test sequences/traces) for CHERIoT are collected in the "smoke-tests/" directory. You can run all of these tests using the `-d <dir>` (`--trace-dir <dir>`) argument:
+
+```sh
+# Run fixed test sequences/traces in the "smoke-tests/" directory
+$ utils/scripts/runTestRIG.py -a sail -b ibex -r rv32ecZifencei_Xcheriot -d smoke-tests
+```
+
+## Cleaning
+
+To clean all implementations and the verification engine, run:
+
+```sh
+$ make clean
+```
+
+Note that this is not guaranteed to be exhaustive for all implementations.
+
+## Additional
+
+### Logs
+
+You can get some logging information out of the implementations using the `--implementation-A-log <filename>`/`--implementation-B-log <filename>` arguments:
+
+```sh
+utils/scripts/runTestRIG.py -a sail -b ibex -r rv32ecZifencei_Xcheriot --implementation-A-log a.log --implementation-B-log b.log
+```
+
+You can get even more information out of the verification engine and some implementations using the `-v <level>` (`--verbosity <level>`) argument:
+
+```sh
+utils/scripts/runTestRIG.py -a sail -b ibex -r rv32ecZifencei_Xcheriot --implementation-A-log a.log --implementation-B-log b.log -v3
+```
+
+### Sail Coverage
+
+You can use the [sailcov](https://github.com/rems-project/sail/tree/sail2/sailcov) utility to turn the raw coverage files output by the Sail compiler and the compiled Sail model into human-readable HTML files. Here is an example for cheriot-sail:
+
+```sh
+# ...After running TestRIG with Sail
+# (having built the Sail model using a Sail compiler built with SAILCOV=1)
+
+# Generate HTML files showing Sail model line coverage.
+# Put all but the index into a new "sailcov-html/" directory.
+$ mkdir -p sailcov-html
+$ ~/tr_tools/sail/sailcov/sailcov -a riscv-implementations/cheriot-sail/generated_definitions/c/all_branches -t sail_coverage --index 'index' --prefix 'sailcov-html/' riscv-implementations/cheriot-sail/src/*.sail riscv-implementations/cheriot-sail/sail-riscv/model/*.sail
+# Open index.html in a web browser...
+```
+
+
+### Cleaning Sail Tooling
+
+Here are some commands for cleaning the Sail tools, just in case the need arises:
+
+```sh
+# Clean sail compiler, coverage collection library and coverage parser binary
+$ cd ~/tr_tools/sail
+$ make clean
+$ rm -f lib/coverage/libsail_coverage.a sailcov/sailcov
 ```

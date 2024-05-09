@@ -22,17 +22,24 @@ struct RVFI_DII_Instruction_Packet {
 }
 ~~~
 
-The `rvfi_cmd` field currently has two values defined:
+The `rvfi_cmd` field currently has five values defined in QuickCheckVEngine:
 ~~~
-0 = EndOfTrace  // Reset the implemenation, including registers, memory, and PC (to 0x80000000)
-1 = Instruction // Execute the instruction in rvfi_insn
+0x00 = EndOfTrace  // Reset the implementation, including registers, memory, and PC(C).
+                      Also used for RVFI version negotiation when rvfi_insn = 0x56455253
+0x01 = Instruction // Execute the instruction in rvfi_insn
+0x76 = SetVersion  // Set the RVFI version to use, as specified in rvfi_insn
+0x69 = IntrRequest // Request the implementation raise the interrupt specified in rvfi_insn
+                      (3:MSI, 7:MTI, 11:MEI). Exact timing is micro-architecturally defined
+0x49 = IntrBarrier // Do not execute next instruction before requested interrupt is raised
 ~~~
+
+See ["Towards Support for Asynchrony in TestRIG"](https://github.com/CTSRD-CHERI/TestRIG/wiki/Towards-Support-for-Asynchrony-in-TestRIG) for more on the thinking behind the interrupt request and barrier packets.
 
 ## RVFI-DII Execution Packet (88 bytes)
 ~~~
 struct RVFI_DII_Execution_Packet {
    Bit8  rvfi_intr;      // [87] Trap handler:            Set for first instruction in trap handler.
-   Bit8  rvfi_halt;      // [86] Halt indicator:          Marks the last instruction retired 
+   Bit8  rvfi_halt;      // [86] Halt indicator:          Marks the last instruction retired
                             //                                      before halting execution.
    Bit8  rvfi_trap;      // [85] Trap indicator:          Invalid decode, misaligned access or
                             //                                      jump command to misaligned address.
@@ -58,7 +65,7 @@ struct RVFI_DII_Execution_Packet {
 
 # Other TestRIG Requirements
 
-TestRIG efficiently verifies a measure of equivelance between a model and an implementation at the cost of constructing
+TestRIG efficiently verifies a measure of equivalence between a model and an implementation at the cost of constructing
 a test harness for the design.
 Specifically:
 
