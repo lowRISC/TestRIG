@@ -49,4 +49,4 @@
 	url = https://github.com/marnovandermaas/cheriot-sail.git
 [submodule "riscv-implementations/cheriot-ibex"]
 	path = riscv-implementations/cheriot-ibex
-	url = https://github.com/marnovandermaas/cheriot-ibex.git
+	url = https://github.com/lowrisc/cheriot-ibex.git
