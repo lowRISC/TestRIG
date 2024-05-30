@@ -64,6 +64,9 @@ Currently, the provided modules are:
 In order to get the different submodules provided by **TestRIG**, run the following command:
 
 ```sh
+$ git clone https://github.com/lowRISC/TestRIG.git
+$ cd TestRIG
+$ git checkout cheriot
 $ git submodule update --init --recursive
 ```
 
@@ -74,6 +77,7 @@ The root makefile can currently build the QuickCheck Verification Engine, the CH
 The dependencies for the Haskell-based QuickCheck Verification Engine can be installed by:
 
 ```sh
+$ sudo apt install gcc g++ make
 $ curl --proto '=https' --tlsv1.2 -sSf https://get-ghcup.haskell.org | sh
 # -> press the Enter/Return key when prompted
 # -> reload your shell
@@ -86,7 +90,7 @@ The dependencies for a Sail model with built-in coverage collection can be built
 
 ```sh
 # Ubuntu dependencies for sail and sailcov
-$ sudo apt-get install ocaml build-essential libgmp-dev z3 pkg-config zlib1g-dev cargo
+$ sudo apt install ocaml opam build-essential libgmp-dev z3 pkg-config zlib1g-dev cargo
 
 # Create and enter a directory for TestRIG-related builds of tools
 $ mkdir -p ~/tr_tools
@@ -96,6 +100,9 @@ $ cd ~/tr_tools
 # Instructions based on: https://github.com/rems-project/sail/blob/sail2/INSTALL.md#building-from-source-without-opam
 $ git clone https://github.com/rems-project/sail.git
 $ cd sail
+$ opam init
+$ eval $(opam env --switch=default)
+$ opam install . --deps-only
 $ make
 
 # Build Sail model coverage library (libsail_coverage.a)
@@ -110,7 +117,9 @@ $ cd ../../
 The dependencies for Ibex are verilator:
 
 ```sh
-$ sudo apt-get install verilator
+$ sudo apt install verilator python3-pip
+$ pip install -r riscv-implementations/cheriot-ibex/python-requirements.txt
+$ export PATH=/home/$USER/.local/bin:$PATH
 ```
 
 ## Custom Configurations
