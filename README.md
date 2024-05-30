@@ -117,7 +117,7 @@ $ cd ../../
 The dependencies for Ibex are verilator:
 
 ```sh
-$ sudo apt install verilator python3-pip
+$ sudo apt install verilator python3-pip libelf-dev
 $ pip install -r riscv-implementations/cheriot-ibex/python-requirements.txt
 $ export PATH=/home/$USER/.local/bin:$PATH
 ```
