@@ -191,9 +191,7 @@ ibex-rv32ic-cheri:
 	$(MAKE) -C riscv-implementations/ibex/verilator
 
 ibex-cheriot:
-	cd riscv-implementations/cheriot-ibex
-	fusesoc --cores-root=. run --setup --build lowrisc:ibex:cheriot_testrig
-	cd ../..
+	fusesoc --cores-root=riscv-implementations/cheriot-ibex run --setup --build lowrisc:ibex:cheriot_testrig
 
 muntjac-rv64imac:
 	$(MAKE) -C riscv-implementations/muntjac
