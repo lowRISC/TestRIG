@@ -171,6 +171,17 @@ Some smoke tests (fixed test sequences/traces) for CHERIoT are collected in the 
 $ utils/scripts/runTestRIG.py -a sail -b ibex -r rv32ecZifencei_Xcheriot -d smoke-tests
 ```
 
+### Verilator Code Coverage
+
+You can get code coverage from Verilator using the following commands:
+
+```sh
+$ utils/scripts/runTestRIG.py -a sail -b ibex -r rv32ecZifencei_Xcheriot --no-shrink --no-save --continue-on-fail -n 10
+$ cp -r logs build/lowrisc_ibex_cheriot_testrig_0
+$ cd build/lowrisc_ibex_cheriot_testrig_0/logs
+$ verilator_coverage --annotate annotated --annotate-all --annotate-min 1 --write-info coverage.info coverage.dat
+```
+
 ## Cleaning
 
 To clean all implementations and the verification engine, run:
