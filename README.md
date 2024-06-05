@@ -107,7 +107,7 @@ $ make
 
 # Build Sail model coverage library (libsail_coverage.a)
 # and coverage processing tool (sailcov).
-# Instrucctions based on: https://github.com/rems-project/sail/tree/sail2/sailcov
+# Instructions based on: https://github.com/rems-project/sail/tree/sail2/sailcov
 $ make -C lib/coverage
 $ make -C sailcov
 
