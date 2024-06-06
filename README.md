@@ -182,6 +182,14 @@ $ cd build/lowrisc_ibex_cheriot_testrig_0/logs
 $ verilator_coverage --annotate annotated --annotate-all --annotate-min 1 --write-info coverage.info coverage.dat
 ```
 
+### Save all traces
+
+Instead of just saving failures you may want to know all the tests that have been run:
+
+```sh
+$ utils/scripts/runTestRIG.py -a sail -b ibex -r rv32ecZifencei_Xcheriot --no-shrink --no-save --continue-on-fail --save-all --save-dir all-tests --verbosity 0 -n 10
+```
+
 ## Cleaning
 
 To clean all implementations and the verification engine, run:
