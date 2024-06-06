@@ -222,7 +222,9 @@ parser.add_argument('--strict-comparison', action='count', default=0,
 parser.add_argument('--no-shrink', action='count', default=0,
   help="Disable VEngine test case shrinking")
 parser.add_argument('--no-save', action='count', default=0,
-  help="Don't ask to save files")
+  help="Don't save failures")
+parser.add_argument('--save-all', action='count', default=0,
+  help="Save all traces, not just failures")
 parser.add_argument('--continue-on-fail', action='count', default=0,
   help="Continue when encountering a failure")
 parser.add_argument('--test-len', metavar='LEN', default=None, type=auto_int,
@@ -594,6 +596,8 @@ def spawn_vengine(name, mport, iport, arch, log, more_args=[]):
       relaxed = False
     if args.no_save:
       cmd += ['--no-save']
+    if args.save_all:
+      cmd += ['--save-all']
     if args.continue_on_fail:
       cmd += ['--continue-on-fail']
     if args.test_len:
