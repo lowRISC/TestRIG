@@ -187,7 +187,8 @@ $ verilator_coverage --annotate annotated --annotate-all --annotate-min 1 --writ
 Instead of just saving failures you may want to know all the tests that have been run:
 
 ```sh
-$ utils/scripts/runTestRIG.py -a sail -b ibex -r rv32ecZifencei_Xcheriot --no-shrink --no-save --continue-on-fail --save-all --save-dir all-tests --verbosity 0 -n 10
+$ mkdir -p all-tests
+$ utils/scripts/runTestRIG.py -a sail -b ibex -r rv32ecZifencei_Xcheriot --no-shrink --continue-on-fail --save-all --save-dir all-tests --verbosity 0 -n 10
 ```
 
 ## Cleaning
