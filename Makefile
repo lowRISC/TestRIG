@@ -74,7 +74,7 @@ clean-sail-generator:
 
 # RISCV implementations
 ################################################################################
-riscv-implementations: sail
+riscv-implementations: ibex-cheriot sail-rv32-cheriot
 
 piccolo-rv32xcheri:
 	$(MAKE) -C riscv-implementations/Piccolo/builds -f Resources/Build_all.mk ARCH=RV32IMUxCHERI_RVFI_DII SIM=bluesim build
@@ -198,7 +198,7 @@ muntjac-rv64imac:
 
 .PHONY: clean-riscv-implementations clean-rvbs clean-sail
 
-clean-riscv-implementations: clean-rvbs clean-spike clean-sail clean-sail-rv32-cheri clean-sail-rv64-cheri clean-sail-rv32-cheriot clean-piccolo clean-flute clean-toooba clean-ibex clean-ibex-cheriot clean-muntjac clean-qemu
+clean-riscv-implementations: clean-sail-rv32-cheriot clean-ibex-cheriot
 
 clean-rvbs: clean-rvbs-rv32IZicsrZifencei
 
