@@ -4,10 +4,6 @@
 [submodule "RVBS"]
 	path = riscv-implementations/RVBS
 	url = https://github.com/CTSRD-CHERI/RVBS.git
-[submodule "riscv-isa-sim"]
-	path = riscv-implementations/riscv-isa-sim
-	url = https://github.com/CTSRD-CHERI/riscv-isa-sim.git
-	branch = cheri
 [submodule "sail-riscv-test-generation"]
 	path = vengines/sail-riscv-test-generation
 	url = https://github.com/rems-project/sail-riscv-test-generation.git
@@ -15,10 +11,6 @@
 	path = riscv-implementations/sail-riscv
 	url = https://github.com/rems-project/sail-riscv.git
 	branch = hpm_events
-[submodule "Piccolo"]
-	path = riscv-implementations/Piccolo
-	url = https://github.com/CTSRD-CHERI/Piccolo.git
-	branch = CHERI
 [submodule "sail-cheri-riscv"]
 	path = riscv-implementations/sail-cheri-riscv
 	url = https://github.com/CTSRD-CHERI/sail-cheri-riscv.git
@@ -26,24 +18,9 @@
 	path = riscv-implementations/ibex
 	url = https://github.com/CTSRD-CHERI/ibex-old.git
 	branch = ibex_cheri
-[submodule "riscv-implementations/Flute"]
-	path = riscv-implementations/Flute
-	url = https://github.com/CTSRD-CHERI/Flute.git
-	branch = CHERI
 [submodule "vengines/QuickCheckVEngine"]
 	path = vengines/QuickCheckVEngine
 	url = https://github.com/lowRISC/QuickCheckVEngine.git
-[submodule "riscv-implementations/qemu"]
-	path = riscv-implementations/qemu
-	url = https://github.com/CTSRD-CHERI/qemu
-	branch = qemu-cheri
-[submodule "riscv-implementations/Toooba"]
-	path = riscv-implementations/Toooba
-	url = https://github.com/CTSRD-CHERI/Toooba.git
-        branch = CHERI
-[submodule "riscv-implementations/muntjac"]
-	path = riscv-implementations/muntjac
-	url = https://github.com/CTSRD-CHERI/muntjac.git
 [submodule "riscv-implementations/cheriot-sail"]
 	path = riscv-implementations/cheriot-sail
 	url = https://github.com/lowRISC/cheriot-sail.git
