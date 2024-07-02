@@ -64,10 +64,10 @@ Currently, the provided modules are:
 In order to get the different submodules provided by **TestRIG**, run the following command:
 
 ```sh
-$ git clone https://github.com/lowRISC/TestRIG.git
-$ cd TestRIG
-$ git checkout cheriot
-$ git submodule update --init --recursive
+git clone https://github.com/lowRISC/TestRIG.git
+cd TestRIG
+git checkout cheriot
+git submodule update --init --recursive
 ```
 
 The root makefile can currently build the QuickCheck Verification Engine, the CHERIoT Sail implementation, and the CHERIoT Ibex implementation.
@@ -77,12 +77,12 @@ The root makefile can currently build the QuickCheck Verification Engine, the CH
 The dependencies for the Haskell-based QuickCheck Verification Engine can be installed by:
 
 ```sh
-$ sudo apt install gcc g++ make
-$ curl --proto '=https' --tlsv1.2 -sSf https://get-ghcup.haskell.org | sh
+sudo apt install gcc g++ make
+curl --proto '=https' --tlsv1.2 -sSf https://get-ghcup.haskell.org | sh
 # -> press the Enter/Return key when prompted
 # -> reload your shell
 
-$ ghcup tui
+ghcup tui
 # -> press "i", then Enter/Return, then "q"
 ```
 
@@ -90,36 +90,36 @@ The dependencies for a Sail model with built-in coverage collection can be built
 
 ```sh
 # Ubuntu dependencies for sail and sailcov
-$ sudo apt install ocaml opam build-essential libgmp-dev z3 pkg-config zlib1g-dev cargo
+sudo apt install ocaml opam build-essential libgmp-dev z3 pkg-config zlib1g-dev cargo
 
 # Create and enter a directory for TestRIG-related builds of tools
-$ mkdir -p ~/tr_tools
-$ cd ~/tr_tools
+mkdir -p ~/tr_tools
+cd ~/tr_tools
 
 # Build Sail model compiler.
 # Instructions based on: https://github.com/rems-project/sail/blob/sail2/INSTALL.md#building-from-source-without-opam
-$ git clone https://github.com/rems-project/sail.git
-$ cd sail
-$ opam init
-$ eval $(opam env --switch=default)
-$ opam install . --deps-only
-$ make
+git clone https://github.com/rems-project/sail.git
+cd sail
+opam init
+eval $(opam env --switch=default)
+opam install . --deps-only
+make
 
 # Build Sail model coverage library (libsail_coverage.a)
 # and coverage processing tool (sailcov).
 # Instructions based on: https://github.com/rems-project/sail/tree/sail2/sailcov
-$ make -C lib/coverage
-$ make -C sailcov
+make -C lib/coverage
+make -C sailcov
 
-$ cd ../../
+cd ../../
 ```
 
 The dependencies for Ibex are verilator:
 
 ```sh
-$ sudo apt install verilator python3-pip libelf-dev
-$ pip install -r riscv-implementations/cheriot-ibex/python-requirements.txt
-$ export PATH=/home/$USER/.local/bin:$PATH
+sudo apt install verilator python3-pip libelf-dev
+pip install -r riscv-implementations/cheriot-ibex/python-requirements.txt
+export PATH=/home/$USER/.local/bin:$PATH
 ```
 
 ## Custom Configurations
@@ -127,7 +127,7 @@ $ export PATH=/home/$USER/.local/bin:$PATH
 Look at the `Makefile` to see different targets to compare against each other. Also use the following command to figure out the different options for running TestRIG:
 
 ```sh
-$ utils/scripts/runTestRIG.py --help
+utils/scripts/runTestRIG.py --help
 ```
 
 ## CHERIoT: Sail vs. Ibex
@@ -136,10 +136,10 @@ Executing the following commands will build and compare the CHERIoT Sail model w
 
 ```sh
 # Build and run CHERIoT Sail vs. CHERIoT Ibex
-$ make vengines
-$ make sail-rv32-cheriot SAILCOV=1 SAIL_DIR='/home/${USER}/tr_tools/sail/'
-$ make ibex-cheriot
-$ utils/scripts/runTestRIG.py -a sail -b ibex -r rv32ecZifencei_Xcheriot
+make vengines
+make sail-rv32-cheriot SAILCOV=1 SAIL_DIR='/home/${USER}/tr_tools/sail/'
+make ibex-cheriot
+utils/scripts/runTestRIG.py -a sail -b ibex -r rv32ecZifencei_Xcheriot
 ```
 
 ### Test Selection
@@ -148,9 +148,9 @@ A subset of test gen can be specified using the `--test-include-regex <regex>` a
 
 ```sh
 # Run the "arith" RV32 arithmetic instruction test template
-$ utils/scripts/runTestRIG.py -a sail -b ibex -r rv32ecZifencei_Xcheriot --test-include-regex '^arith$'
+utils/scripts/runTestRIG.py -a sail -b ibex -r rv32ecZifencei_Xcheriot --test-include-regex '^arith$'
 # Run all but the "compressed" and "caprvcrandom" compressed instruction test templates
-$ utils/scripts/runTestRIG.py -a sail -b ibex -r rv32ecZifencei_Xcheriot --test-exclude-regex 'compress|rvc'
+utils/scripts/runTestRIG.py -a sail -b ibex -r rv32ecZifencei_Xcheriot --test-exclude-regex 'compress|rvc'
 ```
 
 ### Replay Failing Test
@@ -159,7 +159,7 @@ You can replay a test previously saved as a trace file (ext. `.S`) using the `-t
 
 ```sh
 # Replay last failure
-$ utils/scripts/runTestRIG.py -a sail -b ibex -r rv32ecZifencei_Xcheriot -t last_failure.S
+utils/scripts/runTestRIG.py -a sail -b ibex -r rv32ecZifencei_Xcheriot -t last_failure.S
 ```
 
 ### Smoke Tests
@@ -168,7 +168,7 @@ Some smoke tests (fixed test sequences/traces) for CHERIoT are collected in the 
 
 ```sh
 # Run fixed test sequences/traces in the "smoke-tests/" directory
-$ utils/scripts/runTestRIG.py -a sail -b ibex -r rv32ecZifencei_Xcheriot -d smoke-tests
+utils/scripts/runTestRIG.py -a sail -b ibex -r rv32ecZifencei_Xcheriot -d smoke-tests
 ```
 
 ### Verilator Code Coverage
@@ -176,10 +176,10 @@ $ utils/scripts/runTestRIG.py -a sail -b ibex -r rv32ecZifencei_Xcheriot -d smok
 You can get code coverage from Verilator using the following commands:
 
 ```sh
-$ utils/scripts/runTestRIG.py -a sail -b ibex -r rv32ecZifencei_Xcheriot --no-shrink --no-save --continue-on-fail -n 10
-$ cp -r logs build/lowrisc_ibex_cheriot_testrig_0
-$ cd build/lowrisc_ibex_cheriot_testrig_0/logs
-$ verilator_coverage --annotate annotated --annotate-all --annotate-min 1 --write-info coverage.info coverage.dat
+utils/scripts/runTestRIG.py -a sail -b ibex -r rv32ecZifencei_Xcheriot --no-shrink --no-save --continue-on-fail -n 10
+cp -r logs build/lowrisc_ibex_cheriot_testrig_0
+cd build/lowrisc_ibex_cheriot_testrig_0/logs
+verilator_coverage --annotate annotated --annotate-all --annotate-min 1 --write-info coverage.info coverage.dat
 ```
 
 ### Save all traces
@@ -187,8 +187,8 @@ $ verilator_coverage --annotate annotated --annotate-all --annotate-min 1 --writ
 Instead of just saving failures you may want to know all the tests that have been run:
 
 ```sh
-$ mkdir -p all-tests
-$ utils/scripts/runTestRIG.py -a sail -b ibex -r rv32ecZifencei_Xcheriot --no-shrink --continue-on-fail --save-all --save-dir all-tests --verbosity 0 -n 10
+mkdir -p all-tests
+utils/scripts/runTestRIG.py -a sail -b ibex -r rv32ecZifencei_Xcheriot --no-shrink --continue-on-fail --save-all --save-dir all-tests --verbosity 0 -n 10
 ```
 
 ## Cleaning
@@ -196,7 +196,7 @@ $ utils/scripts/runTestRIG.py -a sail -b ibex -r rv32ecZifencei_Xcheriot --no-sh
 To clean all implementations and the verification engine, run:
 
 ```sh
-$ make clean
+make clean
 ```
 
 Note that this is not guaranteed to be exhaustive for all implementations.
@@ -227,8 +227,8 @@ You can use the [sailcov](https://github.com/rems-project/sail/tree/sail2/sailco
 
 # Generate HTML files showing Sail model line coverage.
 # Put all but the index into a new "sailcov-html/" directory.
-$ mkdir -p sailcov-html
-$ ~/tr_tools/sail/sailcov/sailcov -a riscv-implementations/cheriot-sail/generated_definitions/c/all_branches -t sail_coverage --index 'index' --prefix 'sailcov-html/' riscv-implementations/cheriot-sail/src/*.sail riscv-implementations/cheriot-sail/sail-riscv/model/*.sail
+mkdir -p sailcov-html
+~/tr_tools/sail/sailcov/sailcov -a riscv-implementations/cheriot-sail/generated_definitions/c/all_branches -t sail_coverage --index 'index' --prefix 'sailcov-html/' riscv-implementations/cheriot-sail/src/*.sail riscv-implementations/cheriot-sail/sail-riscv/model/*.sail
 # Open index.html in a web browser...
 ```
 
@@ -239,7 +239,7 @@ Here are some commands for cleaning the Sail tools, just in case the need arises
 
 ```sh
 # Clean sail compiler, coverage collection library and coverage parser binary
-$ cd ~/tr_tools/sail
-$ make clean
-$ rm -f lib/coverage/libsail_coverage.a sailcov/sailcov
+cd ~/tr_tools/sail
+make clean
+rm -f lib/coverage/libsail_coverage.a sailcov/sailcov
 ```
