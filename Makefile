@@ -190,8 +190,11 @@ sail-rv32-cheriot:
 ibex-rv32ic-cheri:
 	$(MAKE) -C riscv-implementations/ibex/verilator
 
-ibex-cheriot:
+ibex-cheriot-verilator:
 	fusesoc --cores-root=riscv-implementations/cheriot-ibex run --setup --build lowrisc:ibex:cheriot_testrig
+
+ibex-cheriot:
+	cd riscv-implementations/cheriot-ibex/dv/uvm/core_ibex && ./testrig_vcs_build.sh
 
 muntjac-rv64imac:
 	$(MAKE) -C riscv-implementations/muntjac
@@ -257,8 +260,14 @@ clean-toooba:
 clean-ibex:
 	$(MAKE) -C riscv-implementations/ibex/verilator clean
 
-clean-ibex-cheriot:
+clean-ibex-cheriot-verilator:
 	rm -rf build/lowrisc_ibex_cheriot_testrig_0
+
+clean-ibex-cheriot:
+	rm -r riscv-implementations/cheriot-ibex/dv/uvm/core_ibex/vcs_testrig_out
+	rm -r riscv-implementations/cheriot-ibex/dv/uvm/core_ibex/csrc
+	rm -r riscv-implementations/cheriot-ibex/dv/uvm/core_ibex/sim.vdb
+	rm riscv-implementations/cheriot-ibex/dv/uvm/core_ibex/vc_hdrs.h
 
 clean-muntjac:
 	$(MAKE) -C riscv-implementations/muntjac clean
