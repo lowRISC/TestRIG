@@ -117,13 +117,7 @@ make -C sailcov
 cd ../../
 ```
 
-The dependencies for Ibex are verilator:
-
-```sh
-sudo apt install verilator python3-pip libelf-dev
-pip install -r riscv-implementations/cheriot-ibex/python-requirements.txt
-export PATH=/home/$USER/.local/bin:$PATH
-```
+The dependencies for Ibex are VCS which you will need to install separately.
 
 ## Custom Configurations
 
@@ -142,7 +136,14 @@ Executing the following commands will build and compare the CHERIoT Sail model w
 make vengines
 make sail-rv32-cheriot SAILCOV=1 SAIL_DIR='/home/${USER}/tr_tools/sail/'
 make ibex-cheriot
-utils/scripts/runTestRIG.py -a sail -b ibex -r rv32ecZifencei_Xcheriot
+cd riscv-implementations/cheriot-ibex/dv/uvm/core_ibex
+./vcs_testrig_out/simv -ucli -do ./vcs_testrig.tcl +UVM_TESTNAME=core_ibex_testrig_test -l run.log
+```
+
+In a separate window run:
+```sh
+utils/scripts/runTestRIG.py -a sail -b manual --implementation-B-port 6000 -r rv32ecZifencei_Xcheriot --no-shrink --continue-on-fail --save-all --save-dir a
+ll-tests --verbosity 0 -n 10 --test-exclude-regex 'interrupt'
 ```
 
 ### Test Selection
@@ -151,9 +152,9 @@ A subset of test gen can be specified using the `--test-include-regex <regex>` a
 
 ```sh
 # Run the "arith" RV32 arithmetic instruction test template
-utils/scripts/runTestRIG.py -a sail -b ibex -r rv32ecZifencei_Xcheriot --test-include-regex '^arith$'
+utils/scripts/runTestRIG.py ... --test-include-regex '^arith$'
 # Run all but the "compressed" and "caprvcrandom" compressed instruction test templates
-utils/scripts/runTestRIG.py -a sail -b ibex -r rv32ecZifencei_Xcheriot --test-exclude-regex 'compress|rvc'
+utils/scripts/runTestRIG.py ... --test-exclude-regex 'compress|rvc'
 ```
 
 ### Replay Failing Test
@@ -162,7 +163,7 @@ You can replay a test previously saved as a trace file (ext. `.S`) using the `-t
 
 ```sh
 # Replay last failure
-utils/scripts/runTestRIG.py -a sail -b ibex -r rv32ecZifencei_Xcheriot -t last_failure.S
+utils/scripts/runTestRIG.py ... -t last_failure.S
 ```
 
 ### Smoke Tests
@@ -171,7 +172,7 @@ Some smoke tests (fixed test sequences/traces) for CHERIoT are collected in the 
 
 ```sh
 # Run fixed test sequences/traces in the "smoke-tests/" directory
-utils/scripts/runTestRIG.py -a sail -b ibex -r rv32ecZifencei_Xcheriot -d smoke-tests
+utils/scripts/runTestRIG.py ... -d smoke-tests
 ```
 
 ### Verilator Code Coverage
@@ -179,7 +180,7 @@ utils/scripts/runTestRIG.py -a sail -b ibex -r rv32ecZifencei_Xcheriot -d smoke-
 You can get code coverage from Verilator using the following commands:
 
 ```sh
-utils/scripts/runTestRIG.py -a sail -b ibex -r rv32ecZifencei_Xcheriot --no-shrink --no-save --continue-on-fail -n 10
+# Run your desired TestRIG run
 cp -r logs build/lowrisc_ibex_cheriot_testrig_0
 cd build/lowrisc_ibex_cheriot_testrig_0/logs
 verilator_coverage --annotate annotated --annotate-all --annotate-min 1 --write-info coverage.info coverage.dat
@@ -191,7 +192,7 @@ Instead of just saving failures you may want to know all the tests that have bee
 
 ```sh
 mkdir -p all-tests
-utils/scripts/runTestRIG.py -a sail -b ibex -r rv32ecZifencei_Xcheriot --no-shrink --continue-on-fail --save-all --save-dir all-tests --verbosity 0 -n 10
+utils/scripts/runTestRIG.py ... --no-shrink --continue-on-fail --save-all --save-dir all-tests --verbosity 0 -n 10
 ```
 
 ## Cleaning
@@ -211,13 +212,13 @@ Note that this is not guaranteed to be exhaustive for all implementations.
 You can get some logging information out of the implementations using the `--implementation-A-log <filename>`/`--implementation-B-log <filename>` arguments:
 
 ```sh
-utils/scripts/runTestRIG.py -a sail -b ibex -r rv32ecZifencei_Xcheriot --implementation-A-log a.log --implementation-B-log b.log
+utils/scripts/runTestRIG.py ... --implementation-A-log a.log --implementation-B-log b.log
 ```
 
 You can get even more information out of the verification engine and some implementations using the `-v <level>` (`--verbosity <level>`) argument:
 
 ```sh
-utils/scripts/runTestRIG.py -a sail -b ibex -r rv32ecZifencei_Xcheriot --implementation-A-log a.log --implementation-B-log b.log -v3
+utils/scripts/runTestRIG.py ... --implementation-A-log a.log --implementation-B-log b.log -v3
 ```
 
 ### Sail Coverage
@@ -234,7 +235,6 @@ mkdir -p sailcov-html
 ~/tr_tools/sail/sailcov/sailcov -a riscv-implementations/cheriot-sail/generated_definitions/c/all_branches -t sail_coverage --index 'index' --prefix 'sailcov-html/' riscv-implementations/cheriot-sail/src/*.sail riscv-implementations/cheriot-sail/sail-riscv/model/*.sail
 # Open index.html in a web browser...
 ```
-
 
 ### Cleaning Sail Tooling
 
