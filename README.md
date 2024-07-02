@@ -105,6 +105,9 @@ eval $(opam env --switch=default)
 opam install . --deps-only
 make
 
+# Install Rust and cargo
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+
 # Build Sail model coverage library (libsail_coverage.a)
 # and coverage processing tool (sailcov).
 # Instructions based on: https://github.com/rems-project/sail/tree/sail2/sailcov
