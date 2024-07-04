@@ -223,7 +223,24 @@ utils/scripts/runTestRIG.py ... --implementation-A-log a.log --implementation-B-
 
 ### Sail Coverage
 
-You can use the [sailcov](https://github.com/rems-project/sail/tree/sail2/sailcov) utility to turn the raw coverage files output by the Sail compiler and the compiled Sail model into human-readable HTML files. Here is an example for cheriot-sail:
+You can use the [sailcov](https://github.com/rems-project/sail/tree/sail2/sailcov) utility to turn the raw coverage files output by the Sail compiler and the compiled Sail model into human-readable HTML files.
+To output Sail coverage we recommend making the following change to the run script:
+```diff
+diff --git a/utils/scripts/runTestRIG.py b/utils/scripts/runTestRIG.py
+index e4f24df..151b741 100755
+--- a/utils/scripts/runTestRIG.py
++++ b/utils/scripts/runTestRIG.py
+@@ -510,6 +510,7 @@ def spawn_rvfi_dii_server(name, port, log, isa_def):
+     cmd += ["-i"]
+     if args.verbosity >= 3:
+       cmd += ["-v"]
++    cmd += ["-c", f"sail_coverage_{port}"] # HACK - DO NOT COMMIT
+   ##############################################################################
+   elif name == 'ibex':
+     if args.path_to_ibex is None:
+```
+
+Here is how you generate an HTML output for cheriot-sail:
 
 ```sh
 # ...After running TestRIG with Sail
@@ -235,6 +252,8 @@ mkdir -p sailcov-html
 ~/tr_tools/sail/sailcov/sailcov -a riscv-implementations/cheriot-sail/generated_definitions/c/all_branches -t sail_coverage --index 'index' --prefix 'sailcov-html/' riscv-implementations/cheriot-sail/src/*.sail riscv-implementations/cheriot-sail/sail-riscv/model/*.sail
 # Open index.html in a web browser...
 ```
+
+*Note: the Sail coverage seems to be broken at the moment.*
 
 ### Cleaning Sail Tooling
 
