@@ -265,3 +265,18 @@ cd ~/tr_tools/sail
 make clean
 rm -f lib/coverage/libsail_coverage.a sailcov/sailcov
 ```
+
+### RISCV-DV coverage
+Since Ibex produces a trace log with all the instructions, we can use RISCV-DV to output architectural coverage:
+
+```sh
+cd riscv-implementation/cheriot-ibex/dv/uvm/core_ibex
+# Convert log to CSV
+python3 riscv_dv_extension/ibex_log_to_trace_csv.py --log trace_core_00000000.log --csv rtl_trace.csv
+# Convert CSV to coverage database
+python3 ../../../vendor/google_riscv-dv/cov.py --core ibex --dir . -o riscv-dv-arch-cov --simulator vcs --isa rv32imcb --custom_target riscv_dv_extension
+# Convert coverage database to HTML
+urg -full64 -dir riscv-dv-arch-cov/test.vdb
+# Open coverage in browser
+xdg-open urgReport/dashboard.html
+```
