@@ -117,7 +117,7 @@ make -C sailcov
 cd ../../
 ```
 
-The dependencies for Ibex are VCS which you will need to install separately.
+The dependency for Ibex is VCS, which you will need to install separately.
 
 ## Custom Configurations
 
@@ -142,8 +142,8 @@ cd riscv-implementations/cheriot-ibex/dv/uvm/core_ibex
 
 In a separate window run:
 ```sh
-utils/scripts/runTestRIG.py -a sail -b manual --implementation-B-port 6000 -r rv32ecZifencei_Xcheriot --no-shrink --continue-on-fail --save-all --save-dir a
-ll-tests --verbosity 0 -n 10 --test-exclude-regex 'interrupt'
+mkdir -p all-tests
+utils/scripts/runTestRIG.py -a sail -b manual --implementation-B-port 6000 -r rv32ecZifencei_Xcheriot --no-shrink --continue-on-fail --save-all --save-dir all-tests --verbosity 0 -n 10 --test-exclude-regex 'interrupt'
 ```
 
 ### Test Selection
@@ -192,7 +192,7 @@ Instead of just saving failures you may want to know all the tests that have bee
 
 ```sh
 mkdir -p all-tests
-utils/scripts/runTestRIG.py ... --no-shrink --continue-on-fail --save-all --save-dir all-tests --verbosity 0 -n 10
+utils/scripts/runTestRIG.py ... --no-shrink --continue-on-fail --save-all --save-dir all-tests
 ```
 
 ## Cleaning
@@ -267,6 +267,7 @@ rm -f lib/coverage/libsail_coverage.a sailcov/sailcov
 ```
 
 ### RISCV-DV coverage
+
 Since Ibex produces a trace log with all the instructions, we can use RISCV-DV to output architectural coverage:
 
 ```sh
