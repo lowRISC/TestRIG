@@ -231,6 +231,8 @@ parser.add_argument('--test-len', metavar='LEN', default=None, type=auto_int,
   help="Tell vengine to generate tests up to LEN instructions long")
 parser.add_argument('--supported-features', metavar='FEAT', type=str,
   help="Specify supported features to vengine, separated by '_'. Each feature should begin with 'X'.")
+parser.add_argument('--force-rvfi-v1', action='count', default=0,
+  help="Ignore RVFI version negotiation, specify original 'V1' interface")
 
 # Use argcomplete to provide bash tab completion (https://github.com/kislyuk/argcomplete)
 try:
@@ -614,6 +616,8 @@ def spawn_vengine(name, mport, iport, arch, log, more_args=[]):
       cmd += ['--single-implementation']
     if not relaxed:
       cmd += ['--strict-comparison']
+    if args.force_rvfi_v1:
+      cmd += ['--force-rvfi-v1']
     print("running qcvengine as: ", " ".join(cmd))
     if log is None:
       p = sub.Popen(cmd)

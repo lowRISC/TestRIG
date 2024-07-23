@@ -143,7 +143,7 @@ cd riscv-implementations/cheriot-ibex/dv/uvm/core_ibex
 In a separate window run:
 ```sh
 mkdir -p all-tests
-utils/scripts/runTestRIG.py -a sail -b manual --implementation-B-port 6000 -r rv32ecZifencei_Xcheriot --no-shrink --continue-on-fail --save-all --save-dir all-tests --verbosity 0 -n 10 --test-exclude-regex 'interrupt'
+utils/scripts/runTestRIG.py -a sail -b manual --implementation-B-port 6000 -r rv32ecZifencei_Xcheriot --no-shrink --continue-on-fail --save-all --save-dir all-tests --verbosity 0 -n 10 --test-exclude-regex 'interrupt' --force-rvfi-v1
 ```
 
 ### Test Selection
@@ -164,6 +164,14 @@ You can replay a test previously saved as a trace file (ext. `.S`) using the `-t
 ```sh
 # Replay last failure
 utils/scripts/runTestRIG.py ... -t last_failure.S
+```
+
+### RVFI Version
+
+You can force both implementations to provide RVFI V1 packets instead of V2 packets (if supported) to work around an implementation that doesn't yet have V2 support using the `--force-rvfi-v1` argument:
+
+```sh
+utils/scripts/runTestRIG.py ... --force-rvfi-v1
 ```
 
 ### Smoke Tests
