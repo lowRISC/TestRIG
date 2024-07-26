@@ -8,9 +8,9 @@
 .4byte 0x00419193 # slli x3, x3, 4
 .4byte 0x00818193 # addi x3, x3, 8
 .4byte 0x223600db # cincaddr x1, x12, x3
-.4byte 0x03c0805b # cspecialrw x0, mtcc, x1
-.4byte 0x30446073 # csrrsi x0, mie (0x304), 8
-.4byte 0x30046073 # csrrsi x0, mstatus (0x300), 8
+.4byte 0x03c0825b # cspecialrw x4, mtcc, x1
+.4byte 0x30446273 # csrrsi x4, mie (0x304), 8
+.4byte 0x30046273 # csrrsi x4, mstatus (0x300), 8
 #>END_NO_SHRINK
 #>START_NO_SHRINK
 #>INTERRUPT_REQUEST 3
