@@ -174,6 +174,14 @@ You can force both implementations to provide RVFI V1 packets instead of V2 pack
 utils/scripts/runTestRIG.py ... --force-rvfi-v1
 ```
 
+### Strict Comparison
+
+By default, only a core set of RVFI fields are always compared for mismatches. Many are only compared when the Trap field is not set, or when a memory mask is non-zero. You can force all fields to be checked using the `--strict-comparison` argument.
+
+```sh
+utils/scripts/runTestRIG.py ... --strict-comparison
+```
+
 ### Smoke Tests
 
 Some smoke tests (fixed test sequences/traces) for CHERIoT are collected in the "smoke-tests/" directory. You can run all of these tests using the `-d <dir>` (`--trace-dir <dir>`) argument:
