@@ -74,7 +74,7 @@ clean-sail-generator:
 
 # RISCV implementations
 ################################################################################
-riscv-implementations: ibex-cheriot sail-rv32-cheriot
+riscv-implementations: ibex-rv32-cheriot sail-rv32-cheriot
 
 piccolo-rv32xcheri:
 	$(MAKE) -C riscv-implementations/Piccolo/builds -f Resources/Build_all.mk ARCH=RV32IMUxCHERI_RVFI_DII SIM=bluesim build
@@ -187,8 +187,8 @@ sail-rv64-cheri:
 sail-rv32-cheriot:
 	$(MAKE) -C riscv-implementations/cheriot-sail c_emulator/cheri_riscv_rvfi_RV32
 
-ibex-rv32ic-cheri:
-	$(MAKE) -C riscv-implementations/ibex/verilator
+ibex-rv32-cheriot:
+	cd riscv-implementations/ibex/dv/uvm/core_ibex && ./testrig_xlm_build.sh
 
 ibex-cheriot-verilator:
 	fusesoc --cores-root=riscv-implementations/cheriot-ibex run --setup --build lowrisc:ibex:cheriot_testrig
@@ -258,7 +258,7 @@ clean-toooba:
 	fi
 
 clean-ibex:
-	$(MAKE) -C riscv-implementations/ibex/verilator clean
+	rm -r riscv-implementations/ibex/dv/uvm/core_ibex/xlm_testrig_out/
 
 clean-ibex-cheriot-verilator:
 	rm -rf build/lowrisc_ibex_cheriot_testrig_0

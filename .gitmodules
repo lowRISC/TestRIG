@@ -16,8 +16,7 @@
 	url = https://github.com/CTSRD-CHERI/sail-cheri-riscv.git
 [submodule "ibex"]
 	path = riscv-implementations/ibex
-	url = https://github.com/CTSRD-CHERI/ibex-old.git
-	branch = ibex_cheri
+	url = https://github.com/lowRISC/ibex.git
 [submodule "vengines/QuickCheckVEngine"]
 	path = vengines/QuickCheckVEngine
 	url = https://github.com/lowRISC/QuickCheckVEngine.git

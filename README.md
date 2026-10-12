@@ -48,16 +48,11 @@ The RVFI-DII communication uses a single socket with the itrace consumed and the
 Currently, the provided modules are:
 - [BSV-RVFI-DII](https://github.com/CTSRD-CHERI/BSV-RVFI-DII.git)
 - [RVBS](https://github.com/CTSRD-CHERI/RVBS.git)
-- [CHERI Spike](https://github.com/CTSRD-CHERI/riscv-isa-sim.git)
 - [Sail RISC-V model](https://github.com/rems-project/sail-riscv.git)
 - [CHERI Sail RISC-V model](https://github.com/CTSRD-CHERI/sail-cheri-riscv.git)
-- [CHERIoT Sail RISC-V model](https://github.com/microsoft/cheriot-sail.git)
-- [Piccolo](https://github.com/CTSRD-CHERI/Piccolo.git)
-- [Flute](https://github.com/CTSRD-CHERI/Flute.git)
-- [Toooba](https://github.com/CTSRD-CHERI/Toooba.git)
-- [Ibex](https://github.com/CTSRD-CHERI/ibex.git)
-- [CHERIoT Ibex](https://github.com/microsoft/cheriot-ibex.git)
-- [QEMU](https://github.com/CTSRD-CHERI/qemu.git)
+- [CHERIoT Sail RISC-V model](https://github.com/lowRISC/cheriot-sail.git)
+- [Ibex (with CHERIoT support)](https://github.com/lowRISC/ibex.git)
+- [CHERIoT Ibex](https://github.com/lowRISC/cheriot-ibex.git)
 
 ## Getting started
 
@@ -98,7 +93,7 @@ opam install sail
 eval $(opam env)
 ```
 
-The dependency for Ibex is VCS, which you will need to install separately.
+The dependency for the Ibex UVM TestRIG testbench is Xcelium, which you will need to install separately.
 
 ## Custom Configurations
 
@@ -112,19 +107,25 @@ utils/scripts/runTestRIG.py --help
 
 Executing the following commands will build and compare the CHERIoT Sail model with the CHERIoT version of Ibex across all compatible test templates (test generators), assuming that you've initialized the submodules and have installed all the dependencies described above.
 
+First run only, build test generation and golden model programs:
 ```sh
-# Build and run CHERIoT Sail vs. CHERIoT Ibex
+# Build QCVE and CHERIoT Sail
 make vengines
 make sail-rv32-cheriot
-make ibex-cheriot
-cd riscv-implementations/cheriot-ibex/dv/uvm/core_ibex
-./vcs_testrig_out/simv -ucli -do ./vcs_testrig.tcl +UVM_TESTNAME=core_ibex_testrig_test -l run.log
 ```
 
-In a separate window run:
+Start the RTL simulation:
 ```sh
-mkdir -p all-tests
-utils/scripts/runTestRIG.py -a sail -b manual --implementation-B-port 6000 -r rv32ecZifencei_Xcheriot --no-shrink --continue-on-fail --save-all --save-dir all-tests --verbosity 0 -n 10 --test-exclude-regex 'interrupt' --force-rvfi-v1
+# Build and run Ibex with Xcelium with coverage collection...
+cd riscv-implementations/ibex/dv/uvm/core_ibex
+./testrig_xlm_build.sh -c
+./testrig_xlm_run.sh -c
+```
+
+In a separate window, run TestRIG:
+```sh
+# ...against CHERIoT Sail for a failure
+utils/scripts/runTestRIG.py -a sail -b manual --implementation-B-port 6000 -r rv32ecZifencei_Xcheriot --test-exclude-regex '(rvc)|(interrupt)|(all)|(unstructured)' --force-rvfi-v1
 ```
 
 ### Test Selection
@@ -163,25 +164,58 @@ By default, only a core set of RVFI fields are always compared for mismatches. M
 utils/scripts/runTestRIG.py ... --strict-comparison
 ```
 
-### Smoke Tests
+### Xcelium Trace Capture
 
-Some smoke tests (fixed test sequences/traces) for CHERIoT are collected in the "smoke-tests/" directory. You can run all of these tests using the `-d <dir>` (`--trace-dir <dir>`) argument:
-
-```sh
-# Run fixed test sequences/traces in the "smoke-tests/" directory
-utils/scripts/runTestRIG.py ... -d smoke-tests
-```
-
-### Verilator Code Coverage
-
-You can get code coverage from Verilator using the following commands:
+You can optionally capture the waveform traces from an Xcelium run using the `-w` argument:
 
 ```sh
-# Run your desired TestRIG run
-cp -r logs build/lowrisc_ibex_cheriot_testrig_0
-cd build/lowrisc_ibex_cheriot_testrig_0/logs
-verilator_coverage --annotate annotated --annotate-all --annotate-min 1 --write-info coverage.info coverage.dat
+./testrig_xlm_run.sh -w
 ```
+
+This will reduce performance.
+
+An instruction trace is always captured (when using the UVM testbench) in the file "riscv-implementations/ibex/dv/uvm/core_ibex/trace_core_00000000.log".
+
+### Xcelium Coverage Collection
+
+You can optionally collect many forms of coverage with Xcelium using the `-c` argument:
+
+```sh
+cd riscv-implementations/ibex/dv/uvm/core_ibex
+./testrig_xlm_build.sh -c
+./testrig_xlm_run.sh -c
+```
+
+The resulting database will be stored in a sub-directory of "xlm_testrig_out/coverage/" named after the date+time of the run.
+
+### Xcelium Coverage Reporting
+
+Coverage collected with Xcelium can be viewed directly using `imc`:
+
+```sh
+imc -64bit -load xlm_testrig_out/coverage/2026-07-31_1102.37
+```
+
+Or in report form using:
+
+```sh
+./testrig_xlm_report.sh xlm_testrig_out/coverage/2026-07-31_1102.37
+```
+
+Outputs are written into to "xlm_testrig_out/report/".
+
+### VCS Simulation
+
+You can try to use VCS instead of Xcelium if you want:
+
+```sh
+# Build and run Ibex with VCS...
+cd riscv-implementations/ibex/dv/uvm/core_ibex
+./testrig_vcs_build.sh
+./vcs_testrig_out/simv -ucli -do ./vcs_testrig.tcl +UVM_TESTNAME=core_ibex_testrig_test -l vcs_testrig_out/run.log
+```
+
+Remember to start TestRIG in a separate terminal as for Xcelium.
 
 ### Save all traces
 
@@ -192,6 +226,15 @@ mkdir -p all-tests
 utils/scripts/runTestRIG.py ... --no-shrink --continue-on-fail --save-all --save-dir all-tests
 ```
 
+### Smoke Tests
+
+Some smoke tests (fixed test sequences/traces) for CHERIoT are collected in the "smoke-tests/" directory. You can run all of these tests using the `-d <dir>` (`--trace-dir <dir>`) argument:
+
+```sh
+# Run fixed test sequences/traces in the "smoke-tests/" directory
+utils/scripts/runTestRIG.py ... -d smoke-tests
+```
+
 ## Cleaning
 
 To clean all implementations and the verification engine, run:
@@ -200,7 +243,7 @@ To clean all implementations and the verification engine, run:
 make clean
 ```
 
-Note that this is not guaranteed to be exhaustive for all implementations.
+Note that cleaning is not guaranteed to be exhaustive for all implementations.
 
 ## Additional
 
@@ -212,10 +255,13 @@ You can get some logging information out of the implementations using the `--imp
 utils/scripts/runTestRIG.py ... --implementation-A-log a.log --implementation-B-log b.log
 ```
 
-You can get even more information out of the verification engine and some implementations using the `-v <level>` (`--verbosity <level>`) argument:
+You can get even more (or less) information out of the verification engine and some implementations using the `-v <level>` (`--verbosity <level>`) argument:
 
 ```sh
-utils/scripts/runTestRIG.py ... --implementation-A-log a.log --implementation-B-log b.log -v3
+# More
+utils/scripts/runTestRIG.py ... -v3
+# (or less)
+utils/scripts/runTestRIG.py ... -v0
 ```
 
 ### RISCV-DV coverage
