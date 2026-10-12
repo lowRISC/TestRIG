@@ -617,7 +617,7 @@ def spawn_vengine(name, mport, iport, arch, log, more_args=[]):
     if not relaxed:
       cmd += ['--strict-comparison']
     if args.force_rvfi_v1:
-      cmd += ['--force-rvfi-v1']
+      cmd += ['--force-RVFI-v1']
     print("running qcvengine as: ", " ".join(cmd))
     if log is None:
       p = sub.Popen(cmd)

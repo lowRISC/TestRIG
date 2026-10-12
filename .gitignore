@@ -10,3 +10,6 @@ build/
 # Ignore raw and HTML-formatted Sail coverage files
 sail_coverage*
 *.html
+
+# Ignore QuickCheckVEngine status output
+last_stats.txt
