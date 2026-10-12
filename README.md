@@ -86,35 +86,16 @@ ghcup tui
 # -> press "i", then Enter/Return, then "q"
 ```
 
-The dependencies for a Sail model with built-in coverage collection can be built from source by:
+The dependencies for a Sail model can be installed by:
 
 ```sh
-# Ubuntu dependencies for sail and sailcov
-sudo apt install ocaml opam build-essential libgmp-dev z3 pkg-config zlib1g-dev cargo
+# Ubuntu dependencies for sail
+sudo apt install opam z3 libgmp-dev
 
-# Create and enter a directory for TestRIG-related builds of tools
-mkdir -p ~/tr_tools
-cd ~/tr_tools
-
-# Build Sail model compiler.
-# Instructions based on: https://github.com/rems-project/sail/blob/sail2/INSTALL.md#building-from-source-without-opam
-git clone https://github.com/rems-project/sail.git
-cd sail
+# Install Sail compiler using opam
 opam init
-eval $(opam env --switch=default)
-opam install . --deps-only
-make
-
-# Install Rust and cargo
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
-
-# Build Sail model coverage library (libsail_coverage.a)
-# and coverage processing tool (sailcov).
-# Instructions based on: https://github.com/rems-project/sail/tree/sail2/sailcov
-make -C lib/coverage
-make -C sailcov
-
-cd ../../
+opam install sail
+eval $(opam env)
 ```
 
 The dependency for Ibex is VCS, which you will need to install separately.
@@ -134,7 +115,7 @@ Executing the following commands will build and compare the CHERIoT Sail model w
 ```sh
 # Build and run CHERIoT Sail vs. CHERIoT Ibex
 make vengines
-make sail-rv32-cheriot SAILCOV=1 SAIL_DIR='/home/${USER}/tr_tools/sail/'
+make sail-rv32-cheriot
 make ibex-cheriot
 cd riscv-implementations/cheriot-ibex/dv/uvm/core_ibex
 ./vcs_testrig_out/simv -ucli -do ./vcs_testrig.tcl +UVM_TESTNAME=core_ibex_testrig_test -l run.log
@@ -235,51 +216,6 @@ You can get even more information out of the verification engine and some implem
 
 ```sh
 utils/scripts/runTestRIG.py ... --implementation-A-log a.log --implementation-B-log b.log -v3
-```
-
-### Sail Coverage
-
-You can use the [sailcov](https://github.com/rems-project/sail/tree/sail2/sailcov) utility to turn the raw coverage files output by the Sail compiler and the compiled Sail model into human-readable HTML files.
-To output Sail coverage we recommend making the following change to the run script:
-```diff
-diff --git a/utils/scripts/runTestRIG.py b/utils/scripts/runTestRIG.py
-index e4f24df..151b741 100755
---- a/utils/scripts/runTestRIG.py
-+++ b/utils/scripts/runTestRIG.py
-@@ -510,6 +510,7 @@ def spawn_rvfi_dii_server(name, port, log, isa_def):
-     cmd += ["-i"]
-     if args.verbosity >= 3:
-       cmd += ["-v"]
-+    cmd += ["-c", f"sail_coverage_{port}"] # HACK - DO NOT COMMIT
-   ##############################################################################
-   elif name == 'ibex':
-     if args.path_to_ibex is None:
-```
-
-Here is how you generate an HTML output for cheriot-sail:
-
-```sh
-# ...After running TestRIG with Sail
-# (having built the Sail model using a Sail compiler built with SAILCOV=1)
-
-# Generate HTML files showing Sail model line coverage.
-# Put all but the index into a new "sailcov-html/" directory.
-mkdir -p sailcov-html
-~/tr_tools/sail/sailcov/sailcov -a riscv-implementations/cheriot-sail/generated_definitions/c/all_branches -t sail_coverage --index 'index' --prefix 'sailcov-html/' riscv-implementations/cheriot-sail/src/*.sail riscv-implementations/cheriot-sail/sail-riscv/model/*.sail
-# Open index.html in a web browser...
-```
-
-*Note: the Sail coverage seems to be broken at the moment.*
-
-### Cleaning Sail Tooling
-
-Here are some commands for cleaning the Sail tools, just in case the need arises:
-
-```sh
-# Clean sail compiler, coverage collection library and coverage parser binary
-cd ~/tr_tools/sail
-make clean
-rm -f lib/coverage/libsail_coverage.a sailcov/sailcov
 ```
 
 ### RISCV-DV coverage
